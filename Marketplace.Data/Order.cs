@@ -1,8 +1,8 @@
-namespace Shop.Data
+namespace Marketplace.Data
 {
     public class Order : BaseModel
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public User User { get; set; }
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public string Status { get; set; } = "Pending";

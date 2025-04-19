@@ -1,10 +1,10 @@
-namespace Shop.Data
+namespace Marketplace.Data
 {
     public class ProductCharacteristic
     {
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; }
         public Product Product { get; set; }
-        public int CharacteristicId { get; set; }
+        public Guid CharacteristicId { get; set; }
         public Characteristic Characteristic { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-namespace Shop.Data
+namespace Marketplace.Data
 {
     public class User : BaseModel
     {

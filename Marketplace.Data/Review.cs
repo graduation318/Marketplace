@@ -1,13 +1,10 @@
-namespace Shop.Data
+namespace Marketplace.Data
 {
-    public class Review : BaseModel
+    public class ProductCharacteristic
     {
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; }
         public Product Product { get; set; }
-        public int UserId { get; set; }
-        public User User { get; set; }
-        public int Rating { get; set; }
-        public string Text { get; set; } = string.Empty;
-        public DateTime ReviewDate { get; set; } = DateTime.UtcNow;
+        public Guid CharacteristicId { get; set; }
+        public Characteristic Characteristic { get; set; }
     }
 }

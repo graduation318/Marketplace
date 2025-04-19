@@ -1,8 +1,8 @@
-namespace Shop.Data
+namespace Marketplace.Data
 {
-    public class Payment
+    public class Payment : BaseModel
     {
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public Order Order { get; set; }
         public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
         public decimal Amount { get; set; }
