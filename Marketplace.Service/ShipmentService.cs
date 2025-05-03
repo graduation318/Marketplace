@@ -1,5 +1,6 @@
 using AutoMapper;
 using Marketplace.Data;
+using Marketplace.Data.Models;
 using Marketplace.Service.Interface;
 using Marketplace.Service.ModelsRequest;
 
@@ -14,5 +15,28 @@ public class ShipmentService : BaseService<Shipment, ShipmentRequest, IShipmentP
     {
         _provider = provider;
         _mapper = mapper;
+    }
+
+    public async Task<string> ProcessShipmentAsync(Guid orderId)
+    {
+        var request = new ShipmentRequest
+        {
+            OrderId = orderId,
+            ShippingStatus = "Processing",
+            Carrier = "UPS",
+            TrackingNumber = Guid.NewGuid().ToString().Substring(0, 10),
+            EstimatedDeliveryDate = DateTime.UtcNow.AddDays(5)
+        };
+
+        return await _provider.CreateShipmentAsync(request);
+    }
+
+    public async Task<string> GetShipmentStatusAsync(Guid orderId)
+    {
+        var shipment = await _provider.FindByOrderIdAsync(orderId);
+        if (shipment == null)
+            return "Shipment not found";
+
+        return await _provider.GetTrackingStatusAsync(shipment.TrackingNumber);
     }
 }

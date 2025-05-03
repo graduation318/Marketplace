@@ -15,4 +15,21 @@ public class PaymentService : BaseService<Payment, PaymentRequest, IPaymentProvi
         _provider = provider;
         _mapper = mapper;
     }
+
+    public async Task<Payment?> GetByOrderIdAsync(Guid orderId, CancellationToken cancellationToken)
+    {
+        return await _provider.FindByOrderIdAsync(orderId, cancellationToken);
+    }
+
+    public async Task<string> ProcessPaymentAsync(Guid orderId, decimal amount, string method, CancellationToken cancellationToken)
+    {
+        var request = new PaymentRequest
+        {
+            OrderId = orderId,
+            Amount = amount,
+            PaymentMethod = method
+        };
+
+        return await _provider.CreatePaymentAsync(request, cancellationToken);
+    }
 }

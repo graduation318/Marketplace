@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Azure.ServiceBus.Primitives;
 
 namespace Marketplace.DependencyInjection;
 
@@ -15,8 +16,9 @@ public static partial class ServiceCollectionExtensions
         var authOptions = config
             .GetSection(nameof(AuthOptions))
             .Get<AuthOptions>(options => options.BindNonPublicProperties = true);
+
         service.AddSingleton(authOptions);
-        service.AddSingleton<ITokenProvider>(t => new TokenProvider(authOptions));
+
         service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -32,7 +34,8 @@ public static partial class ServiceCollectionExtensions
                     RequireExpirationTime = authOptions.RequireExpirationTime
                 };
             });
-        service.AddAuthorization(); 
+
+        service.AddAuthorization();
         return service;
     }
 }

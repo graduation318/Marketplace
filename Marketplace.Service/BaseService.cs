@@ -9,7 +9,6 @@ namespace Marketplace.Service;
 
 public class BaseService<TEntityDb, TEntityRequest, TEntityProvider> : IBaseService<TEntityDb, TEntityRequest>
     where TEntityDb : BaseModel
-    where TEntityRequest : BaseModelRequest
     where TEntityProvider : IBaseProvider<TEntityDb>
 {
     private readonly IMapper _mapper;
@@ -23,10 +22,6 @@ public class BaseService<TEntityDb, TEntityRequest, TEntityProvider> : IBaseServ
 
     public virtual async Task<Guid> CreateAsync(TEntityRequest entityRequest, CancellationToken cancellationToken)
     {
-        var existing = await _provider.FindAsync(entityRequest.Id, cancellationToken);
-        if (existing != null)
-            throw new ExistIsEntityException("Запись с таким ID уже существует");
-
         var entity = _mapper.Map<TEntityDb>(entityRequest);
         await _provider.AddAsync(entity, cancellationToken);
         return entity.Id;
@@ -49,6 +44,6 @@ public class BaseService<TEntityDb, TEntityRequest, TEntityProvider> : IBaseServ
 
     public async Task<List<TEntityDb>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _provider.GetAllAsync(cancellationToken);
+        return (List<TEntityDb>)await _provider.GetAllAsync(cancellationToken);
     }
 }

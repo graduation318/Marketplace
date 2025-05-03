@@ -1,4 +1,5 @@
 ﻿using Marketplace.Data;
+using Marketplace.Infrastructure.Migrations;
 using Marketplace.Service.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,12 +30,14 @@ public class ProductProvider : IProductProvider
             .ConfigureAwait(false);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var product = await FindAsync(id, cancellationToken);
-        ArgumentNullException.ThrowIfNull(product);
-        _applicationContext.Remove(product);
+        if (product == null) return false;
+
+        _applicationContext.Products.Remove(product);
         await _applicationContext.SaveChangesAsync(cancellationToken);
+        return true;
     }
 
     public async Task<Product> UpdateAsync(Product entity, CancellationToken cancellationToken)
@@ -44,11 +47,20 @@ public class ProductProvider : IProductProvider
         return entity;
     }
 
-    public async Task<List<Product>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await _applicationContext.Products
             .Include(p => p.Category)
             .Include(p => p.Characteristics)
-            .ToListAsync(cancellationToken: cancellationToken);
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<Product>> GetByTitleAsync(string title, CancellationToken cancellationToken)
+    {
+        return await _applicationContext.Products
+            .Where(p => EF.Functions.Like(p.Name, $"%{title}%"))
+            .Include(p => p.Category)
+            .Include(p => p.Characteristics)
+            .ToListAsync(cancellationToken);
     }
 }

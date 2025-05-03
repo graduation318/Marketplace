@@ -1,5 +1,4 @@
-﻿using Marketplace.Infrastructure;
-using Marketplace.Infrastructure.Providers;
+﻿using Marketplace.Infrastructure.Providers;
 using Marketplace.Service.Interface;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,13 +8,12 @@ public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection service)
     {
-        service.AddDbContext<ApplicationContext>();
-        service.AddScoped<IHallProvider, HallProvider>();
-        service.AddScoped<IHallSeatsProvider, HallSeatsProvider>();
-        service.AddScoped<IMovieProvider, MovieProvider>();
-        service.AddScoped<IPriceProvider, PriceProvider>();
-        service.AddScoped<ISessionProvider, SessionProvider>();
-        service.AddScoped<ITicketProvider, TicketProvider>();
+        service.AddScoped<ICategoryProvider, CategoryProvider>();
+        service.AddScoped<ICharacteristicProvider, CharacteristicProvider>();
+        service.AddScoped<IOrderProvider, OrderProvider>();
+        service.AddScoped<IProductProvider, ProductProvider>();
+        service.AddScoped<IShipmentProvider, ShipmentProvider>();
+        service.AddScoped<IPaymentProvider, PaymentProvider>();
 
         return service;
     }

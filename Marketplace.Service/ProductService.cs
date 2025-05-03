@@ -15,4 +15,9 @@ public class ProductService : BaseService<Product, ProductRequest, IProductProvi
         _provider = provider;
         _mapper = mapper;
     }
+
+    public Task<List<Product>> GetByTitleAsync(string title, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

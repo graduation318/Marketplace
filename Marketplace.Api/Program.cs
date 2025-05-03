@@ -1,6 +1,9 @@
+using Marketplace.Infrastructure.Migrations;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<ApplicationContext>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -37,6 +40,7 @@ app.MapGet("/weatherforecast", () =>
     .WithOpenApi();
 
 app.Run();
+Console.WriteLine("Hello, World!");
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {

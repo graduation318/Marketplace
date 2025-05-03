@@ -1,58 +1,76 @@
-﻿using Cinema.Data;
-using Cinema.Service.Interface;
+﻿using Marketplace.Data;
+using Marketplace.Infrastructure.Migrations;
+using Marketplace.Service.Interface;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cinema.Infrastructure.Providers;
+namespace Marketplace.Infrastructure.Providers;
 
-public class TicketProvider : ITicketProvider
+public class OrderProvider : IOrderProvider
 {
-    private readonly ApplicationContext _applicationContext;
+    private readonly ApplicationContext _context;
 
-    public TicketProvider(ApplicationContext applicationContext)
+    public OrderProvider(ApplicationContext context)
     {
-        _applicationContext = applicationContext;
+        _context = context;
     }
-    public async Task<Guid> AddAsync(Ticket entity, CancellationToken cancellationToken)
+
+    public async Task<Guid> AddAsync(Order entity, CancellationToken cancellationToken)
     {
-        // if (await _applicationContext.Employees.ContainsAsync(entity.Boss, cancellationToken))
-        //     _applicationContext.Entry(entity.Boss).State = EntityState.Unchanged;
-        _applicationContext.Add(entity);
-        await _applicationContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        _context.Orders.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
         return entity.Id;
     }
 
-    public async Task<Ticket?> FindAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Order?> FindAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _applicationContext.Tickets
-            .Include(t => t.Session)
-            .Include(t => t.HallSeats)
-            .Include(t => t.Price)
-            .FirstOrDefaultAsync(t => t.Id == id, cancellationToken).ConfigureAwait(false);
-
+        return await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Order?> FindByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken)
     {
-        var ticket = await FindAsync(id, cancellationToken);
-        ArgumentNullException.ThrowIfNull(ticket);
-        _applicationContext.Remove(ticket);
-        await _applicationContext.SaveChangesAsync(cancellationToken);
+        return await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Include(o => o.Shipment)
+            .Include(o => o.Payment)
+            .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
     }
 
-    public async Task<Ticket> UpdateAsync(Ticket entity, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        _applicationContext.Update(entity);
-        await _applicationContext.SaveChangesAsync(cancellationToken);
+        var order = await _context.Orders.FindAsync(new object?[] { id }, cancellationToken);
+        if (order == null) return false;
+
+        _context.Orders.Remove(order);
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<Order> UpdateAsync(Order entity, CancellationToken cancellationToken)
+    {
+        _context.Orders.Update(entity);
+        await _context.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
-    public async Task<List<Ticket>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _applicationContext.Tickets
-            .Include(t => t.Session)
-            .Include(t => t.HallSeats)
-            .Include(t => t.Price)
-            .ToListAsync(cancellationToken: cancellationToken);
+        return await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderItems)
+            .ToListAsync(cancellationToken);
+    }
 
+    public async Task<IEnumerable<Order>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await _context.Orders
+            .Where(o => o.UserId == userId)
+            .Include(o => o.OrderItems)
+            .ToListAsync(cancellationToken);
     }
 }

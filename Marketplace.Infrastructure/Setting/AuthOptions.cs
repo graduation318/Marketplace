@@ -1,6 +1,6 @@
 ﻿namespace Marketplace.Infrastructure.Setting;
 
-public class AuthOptions:IAuthOptions
+public class AuthOptions//:IAuthOptions
 {
     public string Issuer { get; private init; }
     public string Audience { get; private init; }

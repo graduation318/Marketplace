@@ -4,8 +4,6 @@ using Marketplace.Service.ModelsRequest;
 namespace Marketplace.Service.Interface;
 
 public interface IBaseService<TEntityDb, TEntityRequest>
-    where TEntityDb: BaseModel
-    where TEntityRequest: BaseModelRequest
 {
     Task<Guid> CreateAsync(TEntityRequest entityRequest, CancellationToken cancellationToken);
     Task<TEntityDb?> GetAsync(Guid id, CancellationToken cancellationToken);
