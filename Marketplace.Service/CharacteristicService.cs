@@ -26,7 +26,7 @@ namespace Marketplace.Service
             return await _provider.GetAllAsync(cancellationToken);
         }
 
-        public async Task<Characteristic> CreateAsync(CharacteristicRequest request, CancellationToken cancellationToken)
+        public async Task<Characteristic> CreateAsync(Characteristic request, CancellationToken cancellationToken)
         {
             var entity = _mapper.Map<Characteristic>(request);
             await _provider.AddAsync(entity, cancellationToken);
@@ -39,6 +39,11 @@ namespace Marketplace.Service
             entity.Id = id;
             await _provider.UpdateAsync(entity, cancellationToken);
             return entity;
+        }
+
+        public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
