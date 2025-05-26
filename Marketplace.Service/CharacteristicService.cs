@@ -40,12 +40,6 @@ namespace Marketplace.Service
             await _provider.UpdateAsync(entity, cancellationToken);
             return entity;
         }
-
-        public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
             return await _provider.DeleteAsync(id, cancellationToken);

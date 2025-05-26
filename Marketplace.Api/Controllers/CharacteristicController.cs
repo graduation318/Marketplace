@@ -2,13 +2,14 @@
 using Microsoft.Extensions.Logging;
 using Marketplace.Service;
 using Marketplace.Data;
+using Marketplace.Service.Interface;
 using Marketplace.Service.ModelsRequest;
 
 namespace Marketplace.Api.Controllers;
 
 public class CharacteristicController : WebApiController
 {
-    private readonly CharacteristicService _characteristicService;
+    private readonly ICharacteristicService _characteristicService;
     private readonly ILogger<CharacteristicController> _logger;
 
     public CharacteristicController(CharacteristicService characteristicService, ILogger<CharacteristicController> logger)
@@ -46,7 +47,7 @@ public class CharacteristicController : WebApiController
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
         var result = await _characteristicService.DeleteAsync(id, cancellationToken);
         return result ? NoContent() : NotFound();
